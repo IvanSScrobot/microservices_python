@@ -1,9 +1,10 @@
 import os, gridfs, pika, json
-from flask import Flask, request
+from flask import Flask, request, send_file
 from flask_pymongo import PyMongo
 from my_auth import validate
 from auth_svc import access
 from my_storage import util
+from bson.objectid import ObjectId
 
 server = Flask(__name__)
 
@@ -72,7 +73,7 @@ def download():
             return send_file(out, download_name=f"{fid_string}.mp3")
         except Exception as err:
             print(err)
-            return "internal server error", 500
+            return f"internal Mongo server error {err}", 500
 
     return "not authorized", 401
 

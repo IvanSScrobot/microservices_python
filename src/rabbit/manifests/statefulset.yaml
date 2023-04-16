@@ -34,3 +34,4 @@ spec:
         - name: rabbitmq-volume
           persistentVolumeClaim:
             claimName: rabbitmq-pvc
+
