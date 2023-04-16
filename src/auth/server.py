@@ -6,17 +6,16 @@ server = Flask(__name__)
 mysql = MySQL(server)
 
 # config
-server.config["MYSQL_HOST"]     = os.environ.get("MYSQL_HOST")
-server.config["MYSQL_USER"]     = os.environ.get("MYSQL_USER")
+server.config["MYSQL_HOST"] = os.environ.get("MYSQL_HOST")
+server.config["MYSQL_USER"] = os.environ.get("MYSQL_USER")
 server.config["MYSQL_PASSWORD"] = os.environ.get("MYSQL_PASSWORD")
-server.config["MYSQL_DB"]       = os.environ.get("MYSQL_DB")
-server.config["MYSQL_PORT"]     = os.environ.get("MYSQL_PORT")
+server.config["MYSQL_DB"] = os.environ.get("MYSQL_DB")
+# server.config["MYSQL_PORT"] = os.environ.get("MYSQL_PORT")
+
 
 @server.route("/login", methods=["POST"])
 def login():
     auth = request.authorization
-    # auth.username
-    # auth.password
     if not auth:
         return "missing credentials", 401
 
@@ -36,28 +35,16 @@ def login():
         else:
             return createJWT(auth.username, os.environ.get("JWT_SECRET"), True)
     else:
-        return "invalid credentials", 401
+        return "invalide credentials", 401
 
-def createJWT(username, secret, authz):
-    return jwt.encode(
-        {
-            "username":username,
-            "exp": datetime.datetime.now(tz=datetime.timezone.utc)
-            + datetime.timedelta(days=1),
-            "iat":datetime.datetime.utcnow(),
-            "admin":authz
-        },
-        secret,
-        algorithm="HS256",
-    )
 
-@server.route("/validate",methods=["POST"])
+@server.route("/validate", methods=["POST"])
 def validate():
     encoded_jwt = request.headers["Authorization"]
 
     if not encoded_jwt:
         return "missing credentials", 401
-    
+
     encoded_jwt = encoded_jwt.split(" ")[1]
 
     try:
@@ -66,9 +53,23 @@ def validate():
         )
     except:
         return "not authorized", 403
+
     return decoded, 200
 
 
+def createJWT(username, secret, authz):
+    return jwt.encode(
+        {
+            "username": username,
+            "exp": datetime.datetime.now(tz=datetime.timezone.utc)
+            + datetime.timedelta(days=1),
+            "iat": datetime.datetime.utcnow(),
+            "admin": authz,
+        },
+        secret,
+        algorithm="HS256",
+    )
+
 
 if __name__ == "__main__":
-    server.run(host="0.0.0.0",port=5000)
+    server.run(host="0.0.0.0", port=5000)

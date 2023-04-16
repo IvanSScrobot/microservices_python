@@ -2,7 +2,7 @@ CREATE USER 'auth_user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'ad
 
 CREATE DATABASE auth;
 
-GRANT ALL PRIVILEGES ON auth.* TO 'auth_user'@'localhost';
+GRANT ALL PRIVILEGES ON auth.* TO 'auth_user'@'%';
 
 USE auth;
 

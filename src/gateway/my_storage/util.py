@@ -1,7 +1,5 @@
 import pika, json
 
-
-
 def upload(f, fs, channel, access):
     '''
     This function uploads a file in MongoDB using gridfs and
@@ -14,12 +12,13 @@ def upload(f, fs, channel, access):
     try:
         fid = fs.put(f)
     except Exception as err:
-        return f"Internal MongoDB server error {err}", 500
-    
+        print(err)
+        return f"internal MongoDB server error, {err}", 500
+
     message = {
         "video_fid": str(fid),
         "mp3_fid": None,
-        "username": access["username"]
+        "username": access["username"],
     }
 
     try:
@@ -32,5 +31,6 @@ def upload(f, fs, channel, access):
             ),
         )
     except Exception as err:
+        print(err)
         fs.delete(fid)
-        return f"Internal RabbitMQ server error {err}", 500
+        return f"internal RabbitMQ server error {err}", 500
